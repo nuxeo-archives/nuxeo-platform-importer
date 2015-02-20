@@ -1,10 +1,10 @@
 /*
- * (C) Copyright 2006-2008 Nuxeo SAS (http://nuxeo.com/) and contributors.
+ * (C) Copyright 2006-2015 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
  * are made available under the terms of the GNU Lesser General Public License
  * (LGPL) version 2.1 which accompanies this distribution, and is available at
- * http://www.gnu.org/licenses/lgpl.html
+ * http://www.gnu.org/licenses/lgpl-2.1.html
  *
  * This library is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
@@ -13,10 +13,9 @@
  *
  * Contributors:
  *     Nuxeo - initial API and implementation
+ *     Michaël Vachette
  *
- * $Id$
  */
-
 package org.nuxeo.ecm.platform.importer.base;
 
 import java.io.IOException;
@@ -106,9 +105,11 @@ public class GenericThreadedImportTask implements Runnable {
         taskId = "T" + getNextTaskId();
     }
 
-    protected GenericThreadedImportTask(CoreSession session, SourceNode rootSource, DocumentModel rootDoc,
+    protected GenericThreadedImportTask(
+            String repositoryName, CoreSession session, SourceNode rootSource, DocumentModel rootDoc,
             boolean skipContainerCreation, ImporterLogger rsLogger, int batchSize,
             ImporterDocumentModelFactory factory, ImporterThreadingPolicy threadPolicy) {
+        this.repositoryName = repositoryName;
         this.rsLogger = rsLogger;
         this.session = session;
         this.batchSize = batchSize;
@@ -129,7 +130,8 @@ public class GenericThreadedImportTask implements Runnable {
     public GenericThreadedImportTask(String repositoryName, SourceNode rootSource, DocumentModel rootDoc,
             boolean skipContainerCreation, ImporterLogger rsLogger, int batchSize,
             ImporterDocumentModelFactory factory, ImporterThreadingPolicy threadPolicy, String jobName) {
-        this(null, rootSource, rootDoc, skipContainerCreation, rsLogger, batchSize, factory, threadPolicy);
+        this(repositoryName,null, rootSource, rootDoc, skipContainerCreation, 
+                rsLogger, batchSize, factory, threadPolicy);
         this.jobName = jobName;
         this.repositoryName = repositoryName;
     }
@@ -248,8 +250,10 @@ public class GenericThreadedImportTask implements Runnable {
 
     protected GenericThreadedImportTask createNewTask(DocumentModel parent, SourceNode node, ImporterLogger log,
             Integer batchSize) {
-        GenericThreadedImportTask newTask = new GenericThreadedImportTask(null, node, parent, skipContainerCreation,
-                log, batchSize, factory, threadPolicy);
+        GenericThreadedImportTask newTask =
+                new GenericThreadedImportTask(
+                        repositoryName,null, node, parent, skipContainerCreation,
+                        log, batchSize, factory, threadPolicy);
         newTask.addListeners(listeners);
         newTask.addImportingDocumentFilters(importingDocumentFilters);
         return newTask;
