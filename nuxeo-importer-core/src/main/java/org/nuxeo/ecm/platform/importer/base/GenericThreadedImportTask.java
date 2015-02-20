@@ -106,9 +106,11 @@ public class GenericThreadedImportTask implements Runnable {
         taskId = "T" + getNextTaskId();
     }
 
-    protected GenericThreadedImportTask(CoreSession session, SourceNode rootSource, DocumentModel rootDoc,
+    protected GenericThreadedImportTask(
+            String repositoryName, CoreSession session, SourceNode rootSource, DocumentModel rootDoc,
             boolean skipContainerCreation, ImporterLogger rsLogger, int batchSize,
             ImporterDocumentModelFactory factory, ImporterThreadingPolicy threadPolicy) {
+        this.repositoryName = repositoryName;
         this.rsLogger = rsLogger;
         this.session = session;
         this.batchSize = batchSize;
@@ -129,7 +131,8 @@ public class GenericThreadedImportTask implements Runnable {
     public GenericThreadedImportTask(String repositoryName, SourceNode rootSource, DocumentModel rootDoc,
             boolean skipContainerCreation, ImporterLogger rsLogger, int batchSize,
             ImporterDocumentModelFactory factory, ImporterThreadingPolicy threadPolicy, String jobName) {
-        this(null, rootSource, rootDoc, skipContainerCreation, rsLogger, batchSize, factory, threadPolicy);
+        this(repositoryName,null, rootSource, rootDoc, skipContainerCreation, 
+                rsLogger, batchSize, factory, threadPolicy);
         this.jobName = jobName;
         this.repositoryName = repositoryName;
     }
@@ -248,8 +251,10 @@ public class GenericThreadedImportTask implements Runnable {
 
     protected GenericThreadedImportTask createNewTask(DocumentModel parent, SourceNode node, ImporterLogger log,
             Integer batchSize) {
-        GenericThreadedImportTask newTask = new GenericThreadedImportTask(null, node, parent, skipContainerCreation,
-                log, batchSize, factory, threadPolicy);
+        GenericThreadedImportTask newTask =
+                new GenericThreadedImportTask(
+                        repositoryName,null, node, parent, skipContainerCreation,
+                        log, batchSize, factory, threadPolicy);
         newTask.addListeners(listeners);
         newTask.addImportingDocumentFilters(importingDocumentFilters);
         return newTask;
