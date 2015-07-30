@@ -305,7 +305,7 @@ public class XMLImporterServiceImpl {
                 Map<String, Object> props = (Map<String, Object>) resolveComplex(el, conf);
                 value = new HashMap<>(props);
                 if (props.containsKey("file")) {
-                    Blob blob = resolveBlob(el,conf,"file");
+                    Blob blob = resolveBlob(el, conf, "file");
                     props.put("file",blob);
                     property.addValue(props);
                 } else {
