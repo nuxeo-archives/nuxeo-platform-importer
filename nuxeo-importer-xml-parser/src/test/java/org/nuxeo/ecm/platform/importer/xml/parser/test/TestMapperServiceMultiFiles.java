@@ -22,37 +22,35 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.nuxeo.common.utils.FileUtils;
+import org.nuxeo.ecm.core.api.Blob;
 import org.nuxeo.ecm.core.api.CoreSession;
 import org.nuxeo.ecm.core.api.DocumentModel;
-import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.test.CoreFeature;
 import org.nuxeo.ecm.core.test.annotations.Granularity;
 import org.nuxeo.ecm.core.test.annotations.RepositoryConfig;
 import org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterService;
-import org.nuxeo.ecm.platform.importer.xml.parser.XMLImporterServiceImpl;
 import org.nuxeo.runtime.api.Framework;
 import org.nuxeo.runtime.test.runner.Deploy;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
+import javax.inject.Inject;
 import java.io.File;
 import java.util.List;
-import java.util.Objects;
-
-import javax.inject.Inject;
 
 /**
- * Verify Service mapping with multi-value metadata
+ * Verify Service mapping with multiple file attachments
  *
  * @author <a href="mailto:mvachette@nuxeo.com">Mika</a>
  */
+
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy("nuxeo-importer-xml-parser")
-@LocalDeploy("nuxeo-importer-xml-parser:test-ImporterMapping-MultiValue-contrib.xml")
-public class TestMapperServiceMultiValue {
+@LocalDeploy("nuxeo-importer-xml-parser:test-ImporterMapping-Multifiles-contrib.xml")
+public class TestMapperServiceMultiFiles {
 
     @Inject
     CoreSession session;
@@ -60,7 +58,7 @@ public class TestMapperServiceMultiValue {
     @Test
     public void test() throws Exception {
 
-        File xml = FileUtils.getResourceFileFromContext("multivalue.xml");
+        File xml = FileUtils.getResourceFileFromContext("multifiles.xml");
         Assert.assertNotNull(xml);
 
         DocumentModel root = session.getRootDocument();
@@ -71,12 +69,16 @@ public class TestMapperServiceMultiValue {
 
         session.save();
 
-        List<DocumentModel> docs = session.query("select * from Document where dc:title='MultiValue'");
+        List<DocumentModel> docs = session.query("select * from Document where dc:title='Multifile'");
         Assert.assertEquals("we should have only one File", 1, docs.size());
-        DocumentModel fileDoc = docs.get(0);
-        Property property = fileDoc.getProperty("dc:subjects");
-        Object[] subjects = (Object[]) property.getValue();
-        Assert.assertEquals("The property dc:subjects should contain 2 values", 2, subjects.length);
+
+        DocumentModel doc = docs.get(0);
+
+        Blob mainFile = (Blob) doc.getPropertyValue("file:content");
+        Assert.assertEquals("file1.txt",mainFile.getFilename());
+
+        List<Blob> attachments = (List<Blob>) doc.getPropertyValue("files:files");
+        Assert.assertEquals(2,attachments.size());
     }
 
 }
