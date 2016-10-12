@@ -139,15 +139,16 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
     }
 
     protected ImporterDocumentModelFactory getDocumentModelFactory() {
-        if (documentModelFactory == null) {
-            if (docModelFactoryClass != null
-                    && DefaultDocumentModelFactory.class.isAssignableFrom(docModelFactoryClass)) {
-                try {
-                    setDocumentModelFactory(docModelFactoryClass.getConstructor(String.class, String.class).newInstance(
-                            getFolderishDocType(), getLeafDocType()));
-                } catch (ReflectiveOperationException e) {
-                    log.error(e, e);
-                }
+        if (documentModelFactory == null && docModelFactoryClass != null) {
+            try {
+            	if (DefaultDocumentModelFactory.class.isAssignableFrom(docModelFactoryClass)) {
+            		setDocumentModelFactory(docModelFactoryClass.getConstructor(String.class, String.class)
+                                                				.newInstance(getFolderishDocType(), getLeafDocType()));
+            	} else {
+            		setDocumentModelFactory(docModelFactoryClass.getConstructor().newInstance());
+            	}
+            } catch (ReflectiveOperationException e) {
+                log.error(e, e);
             }
         }
         return documentModelFactory;
