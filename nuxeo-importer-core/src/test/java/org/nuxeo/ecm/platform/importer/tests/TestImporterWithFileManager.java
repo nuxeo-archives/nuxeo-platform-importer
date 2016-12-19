@@ -46,20 +46,20 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Features(CoreFeature.class)
 @RepositoryConfig(cleanup = Granularity.METHOD)
 @Deploy({ 
-        "org.nuxeo.ecm.platform.content.template", 
-        "org.nuxeo.ecm.webapp.base", 
-        "org.nuxeo.ecm.platform.importer.core", 
-        "org.nuxeo.ecm.platform.filemanager.core",
-        "org.nuxeo.ecm.platform.types.core",
-	"org.nuxeo.ecm.platform.video.core",
-        "org.nuxeo.ecm.platform.video.jsf",
-        "org.nuxeo.ecm.platform.audio.core",
-        "org.nuxeo.ecm.platform.audio.jsf",
-        "org.nuxeo.ecm.platform.picture.jsf",
-        "org.nuxeo.ecm.platform.picture.core"
+    "org.nuxeo.ecm.platform.content.template", 
+    "org.nuxeo.ecm.webapp.base", 
+    "org.nuxeo.ecm.platform.importer.core", 
+    "org.nuxeo.ecm.platform.filemanager.core",
+    "org.nuxeo.ecm.platform.types.core",
+    "org.nuxeo.ecm.platform.video.core",
+    "org.nuxeo.ecm.platform.video.jsf",
+    "org.nuxeo.ecm.platform.audio.core",
+    "org.nuxeo.ecm.platform.audio.jsf",
+    "org.nuxeo.ecm.platform.picture.jsf",
+    "org.nuxeo.ecm.platform.picture.core"
 })
 @LocalDeploy({
-        "org.nuxeo.ecm.platform.importer.core.test:test-importer-with-filemanager-contrib.xml" 
+    "org.nuxeo.ecm.platform.importer.core.test:test-importer-with-filemanager-contrib.xml" 
 })
 public class TestImporterWithFileManager {
 
@@ -81,7 +81,7 @@ public class TestImporterWithFileManager {
 
         File source = FileUtils.getResourceFileFromContext("filemanager");
         importerService.importDocuments("/default-domain/workspaces/ws1", source.getPath(), false, 5, 5);
-	session.save();
+        session.save();
 
         DocumentModel file = session.getDocument(new PathRef("/default-domain/workspaces/ws1/filemanager/cat.gif"));
         assertNotNull(file);
