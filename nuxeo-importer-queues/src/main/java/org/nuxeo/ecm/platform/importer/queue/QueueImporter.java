@@ -223,8 +223,8 @@ public class QueueImporter {
     }
 
     private List<Consumer> startConsumerPool(QueuesManager manager, DocumentModel root, int batchSize, ConsumerFactory factory) {
-		ArrayList<Consumer> ret = new ArrayList<>(manager.count());
-		for (int i = 0; i < manager.count(); i++) {
+        ArrayList<Consumer> ret = new ArrayList<>(manager.count());
+        for (int i = 0; i < manager.count(); i++) {
             Consumer c;
             c = factory.createConsumer(log, root, batchSize, manager, i);
             ret.add(c);

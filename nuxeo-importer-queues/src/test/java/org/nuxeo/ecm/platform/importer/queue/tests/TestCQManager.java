@@ -16,6 +16,8 @@
  */
 package org.nuxeo.ecm.platform.importer.queue.tests;
 
+import static org.junit.Assert.assertEquals;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.junit.Test;
@@ -29,8 +31,6 @@ import org.nuxeo.ecm.platform.importer.queue.manager.CQManager;
 import org.nuxeo.ecm.platform.importer.source.SourceNode;
 import org.nuxeo.runtime.test.runner.Features;
 import org.nuxeo.runtime.test.runner.FeaturesRunner;
-
-import static org.junit.Assert.assertEquals;
 
 @RunWith(FeaturesRunner.class)
 @Features(CoreFeature.class)

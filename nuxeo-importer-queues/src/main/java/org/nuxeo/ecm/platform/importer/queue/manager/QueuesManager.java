@@ -16,7 +16,6 @@
  */
 package org.nuxeo.ecm.platform.importer.queue.manager;
 
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.TimeUnit;
 
 import org.nuxeo.ecm.platform.importer.source.SourceNode;

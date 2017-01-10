@@ -1,4 +1,5 @@
-package org.nuxeo.ecm.platform.importer.queue.manager;/*
+package org.nuxeo.ecm.platform.importer.queue.manager;
+/*
  * (C) Copyright 2016 Nuxeo SA (http://nuxeo.com/) and contributors.
  *
  * All rights reserved. This program and the accompanying materials
@@ -15,15 +16,7 @@ package org.nuxeo.ecm.platform.importer.queue.manager;/*
  *     bdelbosc
  */
 
-
-import net.openhft.chronicle.queue.ChronicleQueue;
-import net.openhft.chronicle.queue.ExcerptAppender;
-import net.openhft.chronicle.queue.ExcerptTailer;
-import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
-import org.jetbrains.annotations.Nullable;
-import org.nuxeo.common.utils.ExceptionUtils;
-import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
-import org.nuxeo.ecm.platform.importer.source.SourceNode;
+import static org.apache.commons.io.FileUtils.deleteDirectory;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,27 +24,48 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import static org.apache.commons.io.FileUtils.deleteDirectory;
+import org.jetbrains.annotations.Nullable;
+import org.nuxeo.common.utils.ExceptionUtils;
+import org.nuxeo.ecm.platform.importer.log.ImporterLogger;
+import org.nuxeo.ecm.platform.importer.source.SourceNode;
+
+import net.openhft.chronicle.queue.ChronicleQueue;
+import net.openhft.chronicle.queue.ExcerptAppender;
+import net.openhft.chronicle.queue.ExcerptTailer;
+import net.openhft.chronicle.queue.impl.single.SingleChronicleQueueBuilder;
 
 /**
  * @since 8.10
  */
 public class CQManager extends AbstractQueuesManager {
 
-    final List<ChronicleQueue> queues;
-    final List<ExcerptAppender> appenders;
-    final List<ExcerptTailer> tailers;
+    List<ChronicleQueue> queues;
+
+    List<ExcerptAppender> appenders;
+
+    List<ExcerptTailer> tailers;
+
+    private File basePath;
+
+    private boolean isSetup = false;
 
     public CQManager(ImporterLogger logger, int queuesNb) {
         super(logger, queuesNb);
+    }
+
+    @Override
+    public void init() {
+        if (isSetup) {
+            throw new RuntimeException("Queue Manager is already setup, stop() it first");
+        }
+
         queues = new ArrayList<>(queuesNb);
         appenders = new ArrayList<>(queuesNb);
         tailers = new ArrayList<>(queuesNb);
 
-        // Create a path for the queue
-        File basePath = new File(System.getProperty("java.io.tmpdir"), "CQ");
+        basePath = new File(System.getProperty("java.io.tmpdir"), "CQ");
         basePath.mkdirs();
-        logger.debug("Use chronicle queue base: " + basePath);
+        log.debug("Use chronicle queue base: " + basePath);
         for (int i = 0; i < queuesNb; i++) {
             File path = new File(basePath, "Q" + i);
             try {
@@ -100,7 +114,7 @@ public class CQManager extends AbstractQueuesManager {
             return ret;
         }
         final long deadline = System.currentTimeMillis() + TimeUnit.MILLISECONDS.convert(timeout, unit);
-        while(ret == null && System.currentTimeMillis() < deadline) {
+        while (ret == null && System.currentTimeMillis() < deadline) {
             Thread.sleep(100);
             ret = get(queue);
         }
@@ -109,7 +123,7 @@ public class CQManager extends AbstractQueuesManager {
 
     @Override
     public boolean isEmpty(int queue) {
-        return ! tailers.get(queue).readingDocument().isPresent();
+        return !tailers.get(queue).readingDocument().isPresent();
     }
 
     @Override
