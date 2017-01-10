@@ -68,4 +68,14 @@ public class BQManager extends AbstractQueuesManager {
         queues.get(queue).put(node);
     }
 
+    @Override
+    public void stop() {
+        // Nothing to do
+    }
+
+    @Override
+    public void init() {
+     // Nothing to do
+    }
+
 }

@@ -62,4 +62,19 @@ public interface QueuesManager {
      */
     int size(int queue);
 
+
+    /**
+     * Called when the import finishes. Used to clean up things if needed.
+     *
+     * @since 9.1
+     */
+    void stop();
+
+    /**
+     * Called when the import finishes. Used to clean up things if needed.
+     *
+     * @since 9.1
+     */
+    void init();
+
 }

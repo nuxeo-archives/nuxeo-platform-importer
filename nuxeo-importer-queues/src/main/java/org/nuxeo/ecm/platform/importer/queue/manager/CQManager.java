@@ -78,8 +78,22 @@ public class CQManager extends AbstractQueuesManager {
                 tailers.add(queue.createTailer().toEnd());
             }
         }
+        isSetup = true;
     }
 
+    @Override
+    public void stop() {
+        try {
+            queues.stream().forEach(ChronicleQueue::close);
+            try {
+                deleteDirectory(basePath);
+            } catch (IOException e) {
+                throw new RuntimeException("Unable to delete queue directory", e);
+            }
+        } finally {
+            isSetup = false;
+        }
+    }
 
     @Override
     public void put(int queue, SourceNode node) throws InterruptedException {
@@ -101,7 +115,8 @@ public class CQManager extends AbstractQueuesManager {
     private SourceNode get(int queue) {
         final SourceNode[] ret = new SourceNode[1];
         if (tailers.get(queue).readDocument(w -> {
-            ret[0] = (SourceNode) w.read("node").object();})) {
+            ret[0] = (SourceNode) w.read("node").object();
+        })) {
             return ret[0];
         }
         return null;

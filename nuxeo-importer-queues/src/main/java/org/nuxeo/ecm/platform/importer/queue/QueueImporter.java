@@ -73,6 +73,7 @@ public class QueueImporter {
     public void importDocuments(List<Producer> producers, QueuesManager manager, String importPath, String repositoryName,
                                 int batchSize, ConsumerFactory factory) {
         log.info("importer: Starting import process");
+        manager.init();
         isRunning = true;
         Exception finalException = null;
         DateTime importStarted = new DateTime();
@@ -101,6 +102,9 @@ public class QueueImporter {
             disableFilters(finalException);
             isRunning = false;
         }
+
+        // Cleans the queuing mecanism if needed
+        manager.stop();
 
         DateTime importFinished = new DateTime();
         log.info(String.format("import: End of process: producer send %d docs, consumer receive %d docs, creating %d docs (include retries) in %s mn, rate %.2f doc/s.",
