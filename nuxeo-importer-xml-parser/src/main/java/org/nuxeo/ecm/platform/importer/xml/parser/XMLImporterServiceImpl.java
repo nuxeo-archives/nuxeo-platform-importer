@@ -19,16 +19,6 @@
 
 package org.nuxeo.ecm.platform.importer.xml.parser;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Stack;
-
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -42,7 +32,6 @@ import org.dom4j.Text;
 import org.dom4j.io.SAXReader;
 import org.dom4j.tree.DefaultText;
 import org.mvel2.MVEL;
-
 import org.nuxeo.common.Environment;
 import org.nuxeo.common.utils.ExceptionUtils;
 import org.nuxeo.common.utils.ZipUtils;
@@ -57,6 +46,16 @@ import org.nuxeo.ecm.core.api.model.Property;
 import org.nuxeo.ecm.core.api.model.impl.primitives.BlobProperty;
 import org.nuxeo.ecm.core.schema.types.ListType;
 import org.nuxeo.runtime.api.Framework;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Stack;
 
 /**
  * Main implementation class for delivering the Import logic
@@ -146,7 +145,7 @@ public class XMLImporterServiceImpl {
         return null;
     }
 
-    protected List<AttributeConfigDescriptor> getAttributConfigs(Element el) {
+    protected List<AttributeConfigDescriptor> getAttributeConfigs(Element el) {
         List<AttributeConfigDescriptor> result = new ArrayList<>();
         for (AttributeConfigDescriptor conf : getRegistry().getAttributConfigs()) {
             if (conf.getTagName().equals(el.getName())) {
@@ -238,28 +237,29 @@ public class XMLImporterServiceImpl {
         return propValue;
     }
 
-    protected Blob resolveBlob(Element el, AttributeConfigDescriptor conf) {
+    protected Blob resolveBlob(Element el, AttributeConfigDescriptor conf, String propertyName) {
         @SuppressWarnings("unchecked")
         Map<String, Object> propValues = (Map<String, Object>) resolveComplex(el, conf);
 
-        if (propValues.containsKey("content")) {
+        if (propValues.containsKey(propertyName)) {
             try {
                 Blob blob = null;
-                String content = (String) propValues.get("content");
+                String content = (String) propValues.get(propertyName);
                 if (content != null && workingDirectory != null) {
                     File file = new File(workingDirectory, content.trim());
                     if (file.exists()) {
                         blob = Blobs.createBlob(file);
                     }
                 }
-                if (blob == null) {
-                    blob = Blobs.createBlob((String) propValues.get("content"));
-                }
-                if (propValues.containsKey("mimetype")) {
-                    blob.setMimeType((String) propValues.get("mimetype"));
-                }
-                if (propValues.containsKey("filename")) {
-                    blob.setFilename((String) propValues.get("filename"));
+                if (blob == null && content != null) {
+                    blob = Blobs.createBlob(content);
+
+                    if (propValues.containsKey("mimetype")) {
+                        blob.setMimeType((String) propValues.get("mimetype"));
+                    }
+                    if (propValues.containsKey("filename")) {
+                        blob.setFilename((String) propValues.get("filename"));
+                    }
                 }
                 return blob;
             } catch (IOException e) {
@@ -269,6 +269,7 @@ public class XMLImporterServiceImpl {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     protected void processDocAttributes(DocumentModel doc, Element el, AttributeConfigDescriptor conf) {
         String targetDocProperty = conf.getTargetDocProperty();
 
@@ -289,7 +290,7 @@ public class XMLImporterServiceImpl {
         } else if (property.isComplex()) {
 
             if (property instanceof BlobProperty) {
-                Object value = resolveBlob(el, conf);
+                Object value = resolveBlob(el, conf, "content");
                 if (log.isTraceEnabled()) {
                     log.trace(String.format(MSG_UPDATE_PROPERTY_TRACE, targetDocProperty, el.getUniquePath(), value,
                             conf.toString()));
@@ -328,8 +329,13 @@ public class XMLImporterServiceImpl {
                     }
                 }
             } else {
-                value = (Serializable) resolveComplex(el, conf);
-                if (value != null && !conf.getMapping().isEmpty()) {
+                Map<String, Object> props = (Map<String, Object>) resolveComplex(el, conf);
+                value = new HashMap<>(props);
+                if (props.containsKey("file")) {
+                    Blob blob = resolveBlob(el, conf, "file");
+                    props.put("file", blob);
+                    property.addValue(props);
+                } else {
                     property.addValue(value);
                 }
             }
@@ -497,7 +503,7 @@ public class XMLImporterServiceImpl {
 
                 // get attributes, if attribute needs to be overwritten, empty in the document
                 for (Object e : el.elements()) {
-                    List<AttributeConfigDescriptor> configs = getAttributConfigs((Element) e);
+                    List<AttributeConfigDescriptor> configs = getAttributeConfigs((Element) e);
                     if (configs != null) {
                         if (!deletedAttributes.containsKey(existingDoc.getId())) {
                             deletedAttributes.put(existingDoc.getId(), new ArrayList<String>());
@@ -531,7 +537,7 @@ public class XMLImporterServiceImpl {
         if (createConf != null) {
             createNewDocument(el, createConf);
         }
-        List<AttributeConfigDescriptor> configs = getAttributConfigs(el);
+        List<AttributeConfigDescriptor> configs = getAttributeConfigs(el);
         if (configs != null) {
             for (AttributeConfigDescriptor config : configs) {
                 processDocAttributes(docsStack.peek(), el, config);
