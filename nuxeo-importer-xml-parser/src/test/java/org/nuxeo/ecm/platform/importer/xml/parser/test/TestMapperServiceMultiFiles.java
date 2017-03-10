@@ -36,8 +36,11 @@ import org.nuxeo.runtime.test.runner.FeaturesRunner;
 import org.nuxeo.runtime.test.runner.LocalDeploy;
 
 import javax.inject.Inject;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.InputStreamReader;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -60,7 +63,7 @@ public class TestMapperServiceMultiFiles {
 
     @Test
     @SuppressWarnings("unchecked")
-    public void test() throws Exception {
+    public void shouldImportMultifilesAttachments() throws Exception {
         File xml = FileUtils.getResourceFileFromContext("multifiles.xml");
         assertNotNull(xml);
 
@@ -78,9 +81,21 @@ public class TestMapperServiceMultiFiles {
         DocumentModel doc = docs.get(0);
 
         Blob mainFile = (Blob) doc.getPropertyValue("file:content");
+        BufferedReader reader = new BufferedReader(new InputStreamReader(mainFile.getStream()));
+        String result = reader.readLine();
+        assertEquals("file1", result);
         assertEquals("file1.txt", mainFile.getFilename());
 
-        List<Blob> attachments = (List<Blob>) doc.getPropertyValue("files:files");
+        List<Map<String, Blob>> attachments = (List<Map<String, Blob>>) doc.getPropertyValue("files:files");
+        String[] filenames = new String[] {"file2.txt", "file3.txt"};
+        String[] contents = new String[] {"file2", "file3"};
+        for (int i = 0; i < filenames.length; i++) {
+            Blob blob = attachments.get(i).get("file");
+            reader = new BufferedReader(new InputStreamReader(blob.getStream()));
+            result = reader.readLine();
+            assertEquals(contents[i], result);
+            assertEquals(filenames[i], blob.getFilename());
+        }
         assertEquals(2, attachments.size());
     }
 

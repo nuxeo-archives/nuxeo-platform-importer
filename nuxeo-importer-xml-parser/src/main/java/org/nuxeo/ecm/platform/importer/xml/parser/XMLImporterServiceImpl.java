@@ -64,6 +64,14 @@ import java.util.Stack;
  */
 public class XMLImporterServiceImpl {
 
+    private static final String FILE_PROPERTY = "file";
+
+    private static final String CONTENT_PROPERTY = "content";
+
+    private static final String MIME_TYPE_PROPERTY = "mimetype";
+
+    private static final String FILE_NAME_PROPERTY = "filename";
+
     private static final String MSG_NO_ELEMENT_FOUND = "**CREATION**\n"
             + "No element \"%s\" found in %s, use the DOC_TYPE-INDEX value";
 
@@ -145,7 +153,7 @@ public class XMLImporterServiceImpl {
         return null;
     }
 
-    protected List<AttributeConfigDescriptor> getAttributeConfigs(Element el) {
+    protected List<AttributeConfigDescriptor> getAttributConfigs(Element el) {
         List<AttributeConfigDescriptor> result = new ArrayList<>();
         for (AttributeConfigDescriptor conf : getRegistry().getAttributConfigs()) {
             if (conf.getTagName().equals(el.getName())) {
@@ -254,11 +262,11 @@ public class XMLImporterServiceImpl {
                 if (blob == null && content != null) {
                     blob = Blobs.createBlob(content);
 
-                    if (propValues.containsKey("mimetype")) {
-                        blob.setMimeType((String) propValues.get("mimetype"));
+                    if (propValues.containsKey(MIME_TYPE_PROPERTY)) {
+                        blob.setMimeType((String) propValues.get(MIME_TYPE_PROPERTY));
                     }
-                    if (propValues.containsKey("filename")) {
-                        blob.setFilename((String) propValues.get("filename"));
+                    if (propValues.containsKey(FILE_NAME_PROPERTY)) {
+                        blob.setFilename((String) propValues.get(FILE_NAME_PROPERTY));
                     }
                 }
                 return blob;
@@ -290,7 +298,7 @@ public class XMLImporterServiceImpl {
         } else if (property.isComplex()) {
 
             if (property instanceof BlobProperty) {
-                Object value = resolveBlob(el, conf, "content");
+                Object value = resolveBlob(el, conf, CONTENT_PROPERTY);
                 if (log.isTraceEnabled()) {
                     log.trace(String.format(MSG_UPDATE_PROPERTY_TRACE, targetDocProperty, el.getUniquePath(), value,
                             conf.toString()));
@@ -331,9 +339,9 @@ public class XMLImporterServiceImpl {
             } else {
                 Map<String, Object> props = (Map<String, Object>) resolveComplex(el, conf);
                 value = new HashMap<>(props);
-                if (props.containsKey("file")) {
-                    Blob blob = resolveBlob(el, conf, "file");
-                    props.put("file", blob);
+                if (props.containsKey(FILE_PROPERTY)) {
+                    Blob blob = resolveBlob(el, conf, FILE_PROPERTY);
+                    props.put(FILE_PROPERTY, blob);
                     property.addValue(props);
                 } else {
                     property.addValue(value);
@@ -503,7 +511,7 @@ public class XMLImporterServiceImpl {
 
                 // get attributes, if attribute needs to be overwritten, empty in the document
                 for (Object e : el.elements()) {
-                    List<AttributeConfigDescriptor> configs = getAttributeConfigs((Element) e);
+                    List<AttributeConfigDescriptor> configs = getAttributConfigs((Element) e);
                     if (configs != null) {
                         if (!deletedAttributes.containsKey(existingDoc.getId())) {
                             deletedAttributes.put(existingDoc.getId(), new ArrayList<String>());
@@ -537,7 +545,7 @@ public class XMLImporterServiceImpl {
         if (createConf != null) {
             createNewDocument(el, createConf);
         }
-        List<AttributeConfigDescriptor> configs = getAttributeConfigs(el);
+        List<AttributeConfigDescriptor> configs = getAttributConfigs(el);
         if (configs != null) {
             for (AttributeConfigDescriptor config : configs) {
                 processDocAttributes(docsStack.peek(), el, config);
