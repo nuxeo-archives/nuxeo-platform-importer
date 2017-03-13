@@ -338,12 +338,13 @@ public class XMLImporterServiceImpl {
                 }
             } else {
                 Map<String, Object> props = (Map<String, Object>) resolveComplex(el, conf);
-                value = new HashMap<>(props);
                 if (props.containsKey(FILE_PROPERTY)) {
                     Blob blob = resolveBlob(el, conf, FILE_PROPERTY);
                     props.put(FILE_PROPERTY, blob);
+
                 }
                 property.addValue(props);
+                value = (Serializable) props;
             }
 
             if (log.isTraceEnabled()) {
