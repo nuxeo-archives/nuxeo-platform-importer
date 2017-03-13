@@ -64,13 +64,13 @@ import java.util.Stack;
  */
 public class XMLImporterServiceImpl {
 
-    private static final String FILE_PROPERTY = "file";
+    protected static final String FILE_PROPERTY = "file";
 
-    private static final String CONTENT_PROPERTY = "content";
+    protected static final String CONTENT_PROPERTY = "content";
 
-    private static final String MIME_TYPE_PROPERTY = "mimetype";
+    protected static final String MIME_TYPE_PROPERTY = "mimetype";
 
-    private static final String FILE_NAME_PROPERTY = "filename";
+    protected static final String FILE_NAME_PROPERTY = "filename";
 
     private static final String MSG_NO_ELEMENT_FOUND = "**CREATION**\n"
             + "No element \"%s\" found in %s, use the DOC_TYPE-INDEX value";

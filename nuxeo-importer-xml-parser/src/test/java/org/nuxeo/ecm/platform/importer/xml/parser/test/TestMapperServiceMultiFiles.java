@@ -87,16 +87,15 @@ public class TestMapperServiceMultiFiles {
         assertEquals("file1.txt", mainFile.getFilename());
 
         List<Map<String, Blob>> attachments = (List<Map<String, Blob>>) doc.getPropertyValue("files:files");
-        String[] filenames = new String[] {"file2.txt", "file3.txt"};
-        String[] contents = new String[] {"file2", "file3"};
-        for (int i = 0; i < filenames.length; i++) {
-            Blob blob = attachments.get(i).get("file");
-            reader = new BufferedReader(new InputStreamReader(blob.getStream()));
-            result = reader.readLine();
-            assertEquals(contents[i], result);
-            assertEquals(filenames[i], blob.getFilename());
-        }
         assertEquals(2, attachments.size());
+
+        assertEquals(2, attachments.size());
+        Blob blob2 = attachments.get(0).get("file");
+        assertEquals("file2.txt", blob2.getFilename());
+        assertEquals("file2", blob2.getString());
+        Blob blob3 = attachments.get(1).get("file");
+        assertEquals("file3.txt", blob3.getFilename());
+        assertEquals("file3", blob3.getString());
     }
 
 }
