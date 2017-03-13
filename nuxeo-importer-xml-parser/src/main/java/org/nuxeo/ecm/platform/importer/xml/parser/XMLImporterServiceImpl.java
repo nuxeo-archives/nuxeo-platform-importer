@@ -342,10 +342,8 @@ public class XMLImporterServiceImpl {
                 if (props.containsKey(FILE_PROPERTY)) {
                     Blob blob = resolveBlob(el, conf, FILE_PROPERTY);
                     props.put(FILE_PROPERTY, blob);
-                    property.addValue(props);
-                } else {
-                    property.addValue(value);
                 }
+                property.addValue(props);
             }
 
             if (log.isTraceEnabled()) {
