@@ -261,14 +261,15 @@ public class XMLImporterServiceImpl {
                 }
                 if (blob == null && content != null) {
                     blob = Blobs.createBlob(content);
-
-                    if (propValues.containsKey(MIME_TYPE_PROPERTY)) {
-                        blob.setMimeType((String) propValues.get(MIME_TYPE_PROPERTY));
-                    }
-                    if (propValues.containsKey(FILE_NAME_PROPERTY)) {
-                        blob.setFilename((String) propValues.get(FILE_NAME_PROPERTY));
-                    }
                 }
+
+                if (blob != null && propValues.containsKey(MIME_TYPE_PROPERTY)) {
+                    blob.setMimeType((String) propValues.get(MIME_TYPE_PROPERTY));
+                }
+                if (blob != null && propValues.containsKey(FILE_NAME_PROPERTY)) {
+                    blob.setFilename((String) propValues.get(FILE_NAME_PROPERTY));
+                }
+
                 return blob;
             } catch (IOException e) {
                 throw new RuntimeException(e);
