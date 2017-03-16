@@ -263,11 +263,13 @@ public class XMLImporterServiceImpl {
                     blob = Blobs.createBlob(content);
                 }
 
-                if (blob != null && propValues.containsKey(MIME_TYPE_PROPERTY)) {
-                    blob.setMimeType((String) propValues.get(MIME_TYPE_PROPERTY));
-                }
-                if (blob != null && propValues.containsKey(FILE_NAME_PROPERTY)) {
-                    blob.setFilename((String) propValues.get(FILE_NAME_PROPERTY));
+                if (blob != null) {
+                    if (propValues.containsKey(MIME_TYPE_PROPERTY)) {
+                        blob.setMimeType((String) propValues.get(MIME_TYPE_PROPERTY));
+                    }
+                    if (propValues.containsKey(FILE_NAME_PROPERTY)) {
+                        blob.setFilename((String) propValues.get(FILE_NAME_PROPERTY));
+                    }
                 }
 
                 return blob;
