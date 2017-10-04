@@ -131,4 +131,17 @@ public interface DefaultImporterService {
      */
     void setBulkMode(boolean bulkMode);
 
+    /**
+     * Sets whether or not the GenericMultiThreadedImporter should log performance metrics
+     *
+     * @param enablePerfLogging
+     */
+    void setEnablePerfLogging(boolean enablePerfLogging);
+
+    /**
+     * Get the enablePerfLogging value used by the GenericMultiThreadImporter. Only used by Scan Importer and JAXRS
+     * Importer.
+     */
+    boolean getEnablePerfLogging();
+
 }

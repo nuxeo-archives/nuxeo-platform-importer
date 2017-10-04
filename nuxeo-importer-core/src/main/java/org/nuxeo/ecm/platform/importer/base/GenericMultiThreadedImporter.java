@@ -307,8 +307,11 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         long lastLogProgressTime = System.currentTimeMillis();
         long lastCreatedDocCounter = 0;
 
-        String[] headers = { "nbDocs", "average", "imediate" };
-        PerfLogger perfLogger = new PerfLogger(headers);
+        PerfLogger perfLogger = null;
+        if (enablePerfLogging) {
+            String[] headers = {"nbDocs", "average", "imediate"};
+            perfLogger = new PerfLogger(headers);
+        }
         while (activeTasks > 0) {
             sleep(500);
             activeTasks = importTP.getActiveCount();
@@ -346,7 +349,9 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         }
         stopImportProcrocess();
         log.info("All Threads terminated");
-        perfLogger.release();
+        if (enablePerfLogging && perfLogger != null) {
+            perfLogger.release();
+        }
         notifyAfterImport();
 
         long t1 = System.currentTimeMillis();

@@ -42,6 +42,9 @@ public class ImporterConfigurationDescriptor {
     @XNode("repository")
     protected String repository;
 
+    @XNode("enablePerfLogging")
+    protected Boolean enablePerfLogging;
+
     @XObject("documentModelFactory")
     public static class DocumentModelFactory {
 
@@ -87,4 +90,7 @@ public class ImporterConfigurationDescriptor {
         return bulkMode;
     }
 
+    public Boolean getEnablePerfLogging() {
+        return enablePerfLogging;
+    }
 }
