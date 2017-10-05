@@ -55,7 +55,7 @@ public class DefaultImporterServiceImpl implements DefaultImporterService {
 
     private boolean bulkMode = true;
 
-    private boolean enablePerfLogging;
+    protected boolean enablePerfLogging = true;
 
     @Override
     public void importDocuments(String destinationPath, String sourcePath, boolean skipRootContainerCreation,

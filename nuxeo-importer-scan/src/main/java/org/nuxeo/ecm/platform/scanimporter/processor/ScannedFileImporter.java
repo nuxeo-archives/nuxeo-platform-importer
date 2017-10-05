@@ -142,7 +142,7 @@ public class ScannedFileImporter {
                 !config.isCreateInitialFolder(), config.getBatchSize(), config.getNbThreads(), new BasicLogger(log));
 
         ImporterDocumentModelFactory factory = initDocumentModelFactory(config);
-        importer.setEnablePerfLogging(Framework.getLocalService(
+        importer.setEnablePerfLogging(Framework.getService(
                 DefaultImporterService.class).getEnablePerfLogging());
         importer.setFactory(factory);
         importer.setTransactionTimeout(config.getTransactionTimeout());

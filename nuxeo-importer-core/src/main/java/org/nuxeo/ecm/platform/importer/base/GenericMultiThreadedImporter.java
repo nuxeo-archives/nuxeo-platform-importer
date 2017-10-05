@@ -107,6 +107,8 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
 
     protected String repositoryName;
 
+    protected static final String[] PERF_HEADERS = { "nbDocs", "average", "imediate" };
+
     public static ThreadPoolExecutor getExecutor() {
         return importTP;
     }
@@ -307,11 +309,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         long lastLogProgressTime = System.currentTimeMillis();
         long lastCreatedDocCounter = 0;
 
-        PerfLogger perfLogger = null;
-        if (enablePerfLogging) {
-            String[] headers = {"nbDocs", "average", "imediate"};
-            perfLogger = new PerfLogger(headers);
-        }
+        PerfLogger perfLogger = enablePerfLogging ? new PerfLogger(PERF_HEADERS) : null;
         while (activeTasks > 0) {
             sleep(500);
             activeTasks = importTP.getActiveCount();
@@ -349,7 +347,7 @@ public class GenericMultiThreadedImporter implements ImporterRunner {
         }
         stopImportProcrocess();
         log.info("All Threads terminated");
-        if (enablePerfLogging && perfLogger != null) {
+        if (enablePerfLogging) {
             perfLogger.release();
         }
         notifyAfterImport();
