@@ -23,6 +23,7 @@ import java.util.Map;
 import org.junit.Assume;
 import org.junit.BeforeClass;
 import org.nuxeo.lib.stream.log.kafka.KafkaUtils;
+import org.nuxeo.lib.stream.tests.pattern.KafkaHelper;
 import org.nuxeo.runtime.test.runner.Deploy;
 
 /**
@@ -33,7 +34,7 @@ public class TestAutomationKafkaNoSubscribe extends TestAutomation {
 
     @BeforeClass
     public static void assumeKafkaEnabled() {
-        Assume.assumeTrue(KafkaUtils.kafkaDetected());
+        KafkaHelper.assumeKafkaEnabled();
     }
 
     @Override
