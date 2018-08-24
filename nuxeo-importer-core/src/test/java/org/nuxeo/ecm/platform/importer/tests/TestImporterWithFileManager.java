@@ -55,6 +55,7 @@ import org.nuxeo.runtime.transaction.TransactionHelper;
 @Deploy("org.nuxeo.ecm.platform.audio.core")
 @Deploy("org.nuxeo.ecm.platform.picture.core")
 @Deploy("org.nuxeo.ecm.platform.tag")
+@Deploy("org.nuxeo.ecm.platform.collections.core:OSGI-INF/collection-core-types-contrib.xml")
 @Deploy("org.nuxeo.ecm.platform.importer.core.test:test-importer-with-filemanager-contrib.xml")
 public class TestImporterWithFileManager {
 
