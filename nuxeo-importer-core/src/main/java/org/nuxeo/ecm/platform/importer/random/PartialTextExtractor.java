@@ -36,14 +36,16 @@ public class PartialTextExtractor implements Converter {
 
     @Override
     public BlobHolder convert(BlobHolder blobHolder, Map<String, Serializable> parameters) throws ConversionException {
-        try {
-            Blob blob = blobHolder.getBlob();
+        return new SimpleBlobHolder(convert(blobHolder.getBlob(), parameters));
+    }
 
+    @Override
+    public Blob convert(Blob blob, Map<String, Serializable> parameters) throws ConversionException {
+        try {
             String data = blob.getString();
             int endIdx = (int) (data.length() * TEXT_RATIO);
             String txtData = data.substring(0, endIdx);
-            return new SimpleBlobHolder(Blobs.createBlob(txtData));
-
+            return Blobs.createBlob(txtData);
         } catch (IOException e) {
             throw new ConversionException("error extracting partial text content", e);
         }
