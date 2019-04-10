@@ -3,7 +3,7 @@
 
   <!-- define scheduler event to trigger the import -->
   <extension
-    target="org.nuxeo.ecm.platform.scheduler.core.service.SchedulerRegistryService"
+    target="org.nuxeo.ecm.core.scheduler.SchedulerService"
     point="schedule">
     <schedule id="scanImporter">
       <username>Administrator</username>
